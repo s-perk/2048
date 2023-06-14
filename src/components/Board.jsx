@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import BoardView from './BoardView';
 
 export default function Board() {
   const [board, setBoard] = useState(Array(16).fill(null))
@@ -9,7 +10,6 @@ export default function Board() {
   useEffect(() => {
     const keyHandler = (event) => {
       const key = event.key
-      console.log('key event!', event)
       if (key === 'ArrowUp') {
         // CODE HERE
         console.log('up arrow!')
@@ -64,9 +64,14 @@ export default function Board() {
   }, [])
 
 
-  const addRandomTile = () => {
-    // CODE HERE
+  const addRandomTile = (min, max) => {
+    let position = Math.floor(Math.random() * (max - min + 1)) + min;
+    let newBoard = [...board]
+    newBoard[position] = 2
+    setBoard(newBoard)
+    return
   }
+
   useEffect(() => {
     addRandomTile()
   }, [])
@@ -95,35 +100,7 @@ export default function Board() {
 
   return (
     <>
-      <div>square</div>
-      <div>{board}</div>
-
-      <table>
-        <tr class="row">
-          <td class="square negative"></td>
-          <td class="square negative"></td>
-          <td class="square negative"></td>
-          <td class="square negative"></td>
-        </tr>
-        <tr class="row">
-          <td class="square negative"></td>
-          <td class="square negative"></td>
-          <td class="square negative"></td>
-          <td class="square negative"></td>
-        </tr>
-        <tr class="row">
-          <td class="square negative"></td>
-          <td class="square negative"></td>
-          <td class="square negative"></td>
-          <td class="square negative"></td>
-        </tr>
-        <tr class="row">
-          <td class="square negative"></td>
-          <td class="square negative"></td>
-          <td class="square negative"></td>
-          <td class="square negative"></td>
-        </tr>
-      </table>
+      <BoardView board={board} />
     </>
   )
 
