@@ -50,10 +50,12 @@
 
 .positive {
   background-color: rgb(107, 186, 214);
+  color: black;
 }
 
 .negative {
   background-color: lightgrey;
+  color: black;
 }
 
 /* .inConflict {
