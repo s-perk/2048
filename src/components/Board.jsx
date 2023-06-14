@@ -4,7 +4,7 @@ import BoardView from './BoardView';
 export default function Board({ score, setScore }) {
   const [board, setBoard] = useState(Array(16).fill(null))
 
-  const upTiles = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+  const upTiles = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
   const leftTiles = [0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15]
   const rightTiles = [3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12]
 
@@ -91,48 +91,56 @@ export default function Board({ score, setScore }) {
     addRandomTile()
   }, [])
 
+  useEffect(() => console.log(board), [board])
+
 
   const moveTiles = (tiles) => {
-    let newBoard = [...board]
+    setBoard(prevBoard => {
+      let newBoard = [...prevBoard]
 
-    tiles.forEach((tile) => {
-      // if nothing here already, then ignore
-      if (board[tile] === null) {
-        return;
-      }
+      tiles.forEach((tile) => {
+        // if nothing here already, then ignore
+        console.log('tile', tile, prevBoard[tile])
+        if (prevBoard[tile] === null) {
+          return;
+        }
 
-      let currentTile = tile;
-      let newTile = currentTile - 4;
-      console.log('moving tiles -', currentTile, newTile, board, newBoard)
+        let currentTile = tile;
+        let newTile = currentTile - 4;
+        console.log('moving tiles -', currentTile, newTile)// board, newBoard)
 
-      // Continue moving tile until we reach a new number or edge of grid
-      while ((newTile >= 0) && (newTile <= 15)) {
-        // if newTile is null, set position on board
-        if (newBoard[newTile] === null) {
-          newBoard[newTile] = board[currentTile]
-          newBoard[currentTile] = null
-        } else {
-          // if has a value, then check if same value
-          // if yes, then set to new score and combine numbers
-          // if no, then break loop (current position is appropriate)
-          if (newBoard[newTile] === newBoard[currentTile]) {
-            setScore(score + newBoard[newTile])
-            newBoard[newTile] = board[currentTile] * 2
+        // Continue moving tile until we reach a new number or edge of grid
+        while ((newTile >= 0) && (newTile <= 15)) {
+          // if newTile is null, set position on board
+          if (newBoard[newTile] === null) {
+            newBoard[newTile] = prevBoard[currentTile]
             newBoard[currentTile] = null
           } else {
-            break
+            // if has a value, then check if same value
+            // if yes, then set to new score and combine numbers
+            // if no, then break loop (current position is appropriate)
+            if (newBoard[newTile] === newBoard[currentTile]) {
+              setScore(score + newBoard[newTile])
+              newBoard[newTile] = prevBoard[currentTile] * 2
+              newBoard[currentTile] = null
+            } else {
+              break
+            }
           }
         }
-      }
 
-      // Add a random tile at the end
-      if (newTile !== currentTile) {
-        let position = getRandomTile(0, 15);
-        newBoard[position] = 2
-      }
 
+        // Add a random tile at the end
+        if (newTile !== currentTile) {
+          // let position = getRandomTile(0, 15);
+          // newBoard[position] = 2
+          addRandomTile()
+        }
+
+        return newBoard
+
+      })
     })
-    setBoard(newBoard)
   }
 
 
