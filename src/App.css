@@ -36,3 +36,26 @@
     transform: rotate(360deg);
   }
 }
+
+.square {
+  width: 60px;
+  height: 60px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.square:hover {
+  color: rgb(56, 67, 70);
+}
+
+.positive {
+  background-color: rgb(107, 186, 214);
+}
+
+.negative {
+  background-color: lightgrey;
+}
+
+/* .inConflict {
+  background-color: red;
+} */
