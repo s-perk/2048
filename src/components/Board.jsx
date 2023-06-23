@@ -2,26 +2,39 @@ import React, { useCallback, useEffect, useState, useMemo } from 'react'
 import BoardView from './BoardView';
 
 export default function Board() {
-  const [board, setBoard] = useState(Array(16).fill(null))
-  const [score, setScore] = useState(0);
+  const [board, setBoard] = useState(() => {
+    let arr = Array(16).fill(null)
+    arr.score = 0
+    return arr
+  })
+  // const [score, setScore] = useState(0);
 
   const upTiles = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
   const leftTiles = [0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15]
   const rightTiles = [3, 7, 11, 15, 2, 6, 10, 14, 1, 5, 9, 13, 0, 4, 8, 12]
 
-
+  // useEffect(() => {
+  //   setBoard(prevBoard => {
+  //     let newBoard = [...prevBoard]
+  //     newBoard.score = 0
+  //     return newBoard
+  //   })
+  // }, [])
 
   const moveTiles = (tiles) => {
+
     setBoard(prevBoard => {
       let newBoard = [...prevBoard]
+      let score = prevBoard.score
+      let changed = false
 
       tiles.forEach((tile, i) => {
-        // if nothing here already, then ignore
+        // Only evaluate tiles that have numbers
         if (prevBoard[tile] === null) {
           return;
         }
 
-        let currentTile = tiles[i];
+        let currentTile = Number(tile)
         i -= 4
 
 
@@ -34,6 +47,7 @@ export default function Board() {
             newBoard[newTile] = newBoard[currentTile]
             newBoard[currentTile] = null
             currentTile = newTile
+            changed = true
             i -= 4
 
           } else {
@@ -41,27 +55,31 @@ export default function Board() {
             // if yes, then set to new score and combine numbers
             // if no, then break loop (current position is appropriate)
             if (newBoard[newTile] === newBoard[currentTile]) {
-              // currScore += newBoard[newTile]
-              newBoard[newTile] = prevBoard[tile] * 2
+              score += newBoard[newTile]
+              newBoard[newTile] = newBoard[newTile] * 2
               newBoard[currentTile] = null
+              changed = true
             } else {
               break
             }
           }
         }
-
-        // Add a random tile at the end
-        if (currentTile !== tile) {
-          let position = getRandomTile(newBoard)
-          newBoard[position] = 2
-        }
       })
 
+      // Add a random tile at the end
+      if (changed) {
+        console.log('changed!')
+        let position = getRandomTile(newBoard)
+        newBoard[position] = 2
+      }
+
+      newBoard.score = score
 
       return newBoard
     })
-  }
 
+
+  }
 
 
   useEffect(() => {
@@ -73,7 +91,7 @@ export default function Board() {
         moveTiles(upTiles)
       } else if (key === 'ArrowDown') {
         console.log('down arrow!')
-        moveTiles(upTiles.reverse())
+        moveTiles([...upTiles].reverse())
       } else if (key === 'ArrowLeft') {
         console.log('left arrow!')
         moveTiles(leftTiles)
@@ -89,7 +107,7 @@ export default function Board() {
     return () => {
       window.removeEventListener('keydown', keyHandler)
     }
-  }, [moveTiles])
+  }, [])
 
 
 
@@ -127,15 +145,18 @@ export default function Board() {
   // Add random tile
   const getRandomTile = (newBoard = [...board], min = 0, max = 15) => {
     let position = Math.floor(Math.random() * (max - min + 1)) + min;
+    let count = 1
     // Check if we already have a value in that position
-    while (board[position] !== null) {
+    while ((newBoard[position] !== null) && (count < 16)) {
       position = Math.floor(Math.random() * (max - min + 1)) + min;
+      count++
     }
     return position
   }
   const addRandomTile = (newBoard = [...board]) => {
     let position = getRandomTile(newBoard)
     newBoard[position] = 2
+    newBoard.score = board.score
     setBoard(newBoard)
     return
   }
@@ -151,7 +172,7 @@ export default function Board() {
 
   return (
     <>
-      <div>Score: {score}</div>
+      <div>Score: {board.score}</div>
       <BoardView board={board} />
     </>
   )
