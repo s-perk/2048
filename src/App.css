@@ -42,6 +42,44 @@
   height: 160px;
   text-align: center;
   cursor: pointer;
+  background-color: lightgrey;
+  color: black;
+}
+
+.square.color-2 {
+  background-color: rgb(219, 214, 199);
+}
+
+.square.color-4 {
+  background-color: rgb(217, 202, 156);
+}
+
+.square.color-8 {
+  background-color: rgb(218, 158, 90);
+}
+
+.square.color-16 {
+  background-color: rgb(237, 160, 72);
+}
+
+.square.color-32 {
+  background-color: rgb(237, 135, 72);
+}
+
+.square.color-64 {
+  background-color: rgb(236, 113, 37);
+}
+
+.square.color-128 {
+  background-color: rgb(232, 195, 77);
+}
+
+.square.color-256 {
+  background-color: rgb(232, 190, 52);
+}
+
+.square.color-512 {
+  background-color: rgb(195, 158, 36);
 }
 
 .square:hover {
@@ -52,12 +90,3 @@
   background-color: rgb(107, 186, 214);
   color: black;
 }
-
-.negative {
-  background-color: lightgrey;
-  color: black;
-}
-
-/* .inConflict {
-  background-color: red;
-} */
