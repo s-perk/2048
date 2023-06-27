@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react'
 import BoardView from './BoardView';
 
-export default function Board() {
+export default function Board({ gameState, setGameState }) {
   const [board, setBoard] = useState(() => {
     let arr = Array(16).fill(null)
     arr.score = 0
     return arr
   })
+
+
   // const [score, setScore] = useState(0);
 
   const upTiles = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
@@ -27,10 +29,12 @@ export default function Board() {
       let newBoard = [...prevBoard]
       let score = prevBoard.score
       let changed = false
+      let nullTiles = []
 
       tiles.forEach((tile, i) => {
         // Only evaluate tiles that have numbers
         if (prevBoard[tile] === null) {
+          nullTiles.push(tile)
           return;
         }
 
@@ -69,8 +73,7 @@ export default function Board() {
       // Add a random tile at the end
       if (changed) {
         console.log('changed!')
-        let position = getRandomTile(newBoard)
-        newBoard[position] = 2
+        addRandomTile(newBoard, nullTiles)
       }
 
       newBoard.score = score
@@ -143,18 +146,31 @@ export default function Board() {
 
 
   // Add random tile
-  const getRandomTile = (newBoard = [...board], min = 0, max = 15) => {
-    let position = Math.floor(Math.random() * (max - min + 1)) + min;
-    let count = 1
-    // Check if we already have a value in that position
-    while ((newBoard[position] !== null) && (count < 16)) {
-      position = Math.floor(Math.random() * (max - min + 1)) + min;
-      count++
+  const getRandomTile = (available, min = 0, max = 15) => {
+    max = available.length
+
+    // If None are available, return -1
+    if (max === 0) {
+      return -1
     }
-    return position
+
+    let position = Math.floor(Math.random() * (max - min + 1)) + min;
+    // let count = 1
+    // // Check if we already have a value in that position
+    // while ((newBoard[position] !== null) && (count <= max)) {
+    //   position = Math.floor(Math.random() * (max - min + 1)) + min;
+    //   count++
+    // }
+    return available[position]
   }
-  const addRandomTile = (newBoard = [...board]) => {
-    let position = getRandomTile(newBoard)
+  const addRandomTile = (newBoard = [...board], available = [...upTiles]) => {
+    let position = getRandomTile(available)
+
+    // No tiles available - Game Over
+    if (position === -1) {
+      setGameState({ ...gameState, active: false })
+      return
+    }
     newBoard[position] = 2
     newBoard.score = board.score
     setBoard(newBoard)
@@ -165,13 +181,13 @@ export default function Board() {
     addRandomTile()
   }, [])
 
-  useEffect(() => console.log(board), [board])
 
 
 
 
   return (
     <>
+      {!gameState.active && <div style={{ color: 'red' }}>Game Over</div >}
       <div>Score: {board.score}</div>
       <BoardView board={board} />
     </>
